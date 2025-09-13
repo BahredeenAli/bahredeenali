@@ -1,539 +1,886 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hawassa Ceramics PLC - Interactive Business Plan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Warm Neutrals with Earthy Accents -->
-    <!-- Application Structure Plan: A single-page dashboard layout with a fixed sidebar for navigation. The main content area dynamically displays different sections (Overview, Market, Products, Financials, Risks). This structure was chosen to break down the dense business plan into digestible, thematic chunks, allowing users to explore non-linearly based on their interests. Key interactions include clicking navigation links to switch views, and hovering over charts for detailed tooltips. This approach enhances usability by providing a clear, organized, and interactive path through complex information. -->
-    <!-- Visualization & Content Choices: 
-        - Market Deficit: Report Info -> Ethiopia's ceramic import/export data. Goal -> Highlight the market opportunity. Viz/Presentation -> Bar Chart (Chart.js). Interaction -> Hover for exact values. Justification -> A bar chart provides a stark, immediate visual comparison of the import vs. export gap.
-        - Startup Costs: Report Info -> Estimated startup cost breakdown. Goal -> Show initial investment allocation. Viz/Presentation -> Donut Chart (Chart.js). Interaction -> Hover for cost category details. Justification -> A donut chart effectively illustrates the proportion of each cost category relative to the total investment.
-        - Production Process: Report Info -> Steps from raw material to finished product. Goal -> Explain the manufacturing value chain. Viz/Presentation -> Interactive HTML/CSS diagram. Interaction -> Click on steps to reveal details. Justification -> An interactive, step-by-step diagram is more engaging and easier to follow than a long text description.
-        - Financial Projections: Report Info -> Key financial metrics over 5 years. Goal -> Demonstrate financial viability and growth. Viz/Presentation -> Line Chart (Chart.js). Interaction -> Hover to see projected values for each year. Justification -> A line chart is ideal for showing trends and projections over time.
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #FDFBF8; /* Warm Neutral Background */
-        }
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #fdfbf8; /* Warm Neutral Background */
+      }
+      .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        height: 350px;
+        max-height: 400px;
+      }
+      @media (max-width: 768px) {
         .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 350px;
-            max-height: 400px;
+          height: 300px;
         }
-        @media (max-width: 768px) {
-            .chart-container {
-                height: 300px;
-            }
-        }
-        .nav-link {
-            transition: all 0.3s ease;
-        }
-        .nav-link.active {
-            background-color: #D4C3A3; /* Earthy Accent */
-            color: #4A4031; /* Darker Text */
-            font-weight: 600;
-        }
-        .content-section {
-            display: none;
-        }
-        .content-section.active {
-            display: block;
-        }
-        .process-step {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .process-step.active {
-            border-color: #A88B5F;
-            transform: translateY(-5px);
-        }
-        .process-step-details {
-            display: none;
-        }
-        .process-step-details.active {
-            display: block;
-        }
+      }
+      .nav-link {
+        transition: all 0.3s ease;
+      }
+      .nav-link.active {
+        background-color: #d4c3a3; /* Earthy Accent */
+        color: #4a4031; /* Darker Text */
+        font-weight: 600;
+      }
+      .content-section {
+        display: none;
+      }
+      .content-section.active {
+        display: block;
+      }
+      .process-step {
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+      .process-step.active {
+        border-color: #a88b5f;
+        transform: translateY(-5px);
+      }
+      .process-step-details {
+        display: none;
+      }
+      .process-step-details.active {
+        display: block;
+      }
     </style>
-</head>
-<body class="bg-[#FDFBF8] text-[#4A4031]">
-
+  </head>
+  <body class="bg-[#FDFBF8] text-[#4A4031]">
     <div class="flex min-h-screen">
-        <!-- Sidebar Navigation -->
-        <aside class="w-64 bg-[#F4EFE6] p-6 hidden lg:block sticky top-0 h-screen">
-            <div class="flex items-center mb-10">
-                 <div class="w-10 h-10 bg-[#A88B5F] rounded-full flex items-center justify-center mr-3">
-                    <span class="text-white font-bold text-xl">HC</span>
-                </div>
-                <h1 class="text-xl font-bold text-[#4A4031]">Hawassa Ceramics</h1>
+      <aside
+        class="w-64 bg-[#F4EFE6] p-6 hidden lg:block sticky top-0 h-screen"
+      >
+        <div class="flex items-center mb-10">
+          <div
+            class="w-10 h-10 bg-[#A88B5F] rounded-full flex items-center justify-center mr-3"
+          >
+            <span class="text-white font-bold text-xl">HC</span>
+          </div>
+          <h1 class="text-xl font-bold text-[#4A4031]">Hawassa Ceramics</h1>
+        </div>
+        <nav id="desktop-nav">
+          <a
+            href="#AboutMe"
+            class="nav-link active flex items-center px-4 py-3 rounded-lg mb-2"
+          >
+            <span class="mr-3">📜</span> About Me
+          </a>
+          <a
+            href="#overview"
+            class="nav-link flex items-center px-4 py-3 rounded-lg mb-2"
+          >
+            <span class="mr-3">📜</span> Overview
+          </a>
+          <a
+            href="#market"
+            class="nav-link flex items-center px-4 py-3 rounded-lg mb-2"
+          >
+            <span class="mr-3">📈</span> Market Opportunity
+          </a>
+          <a
+            href="#products"
+            class="nav-link flex items-center px-4 py-3 rounded-lg mb-2"
+          >
+            <span class="mr-3">🏺</span> Products & Process
+          </a>
+          <a
+            href="#financials"
+            class="nav-link flex items-center px-4 py-3 rounded-lg mb-2"
+          >
+            <span class="mr-3">💰</span> Financial Plan
+          </a>
+          <a
+            href="#risks"
+            class="nav-link flex items-center px-4 py-3 rounded-lg mb-2"
+          >
+            <span class="mr-3">⚠️</span> Risk Assessment
+          </a>
+        </nav>
+      </aside>
+
+      <main class="flex-1 p-6 md:p-10">
+        <header class="lg:hidden flex justify-between items-center mb-6">
+          <div class="flex items-center">
+            <div
+              class="w-8 h-8 bg-[#A88B5F] rounded-full flex items-center justify-center mr-2"
+            >
+              <span class="text-white font-bold text-lg">HC</span>
             </div>
-            <nav id="desktop-nav">
-                <a href="#overview" class="nav-link active flex items-center px-4 py-3 rounded-lg mb-2">
-                    <span class="mr-3">📜</span> Overview
-                </a>
-                <a href="#market" class="nav-link flex items-center px-4 py-3 rounded-lg mb-2">
-                    <span class="mr-3">📈</span> Market Opportunity
-                </a>
-                <a href="#products" class="nav-link flex items-center px-4 py-3 rounded-lg mb-2">
-                    <span class="mr-3">🏺</span> Products & Process
-                </a>
-                <a href="#financials" class="nav-link flex items-center px-4 py-3 rounded-lg mb-2">
-                    <span class="mr-3">💰</span> Financial Plan
-                </a>
-                 <a href="#risks" class="nav-link flex items-center px-4 py-3 rounded-lg mb-2">
-                    <span class="mr-3">⚠️</span> Risk Assessment
-                </a>
-            </nav>
-        </aside>
+            <h1 class="text-lg font-bold">Hawassa Ceramics</h1>
+          </div>
+          <button id="mobile-menu-button" class="p-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16m-4 6h4"
+              />
+            </svg>
+          </button>
+        </header>
+        <nav
+          id="mobile-nav"
+          class="hidden lg:hidden mb-6 bg-white rounded-lg shadow-md p-4"
+        >
+          <a
+            href="#AboutMe"
+            class="nav-link mobile active block px-4 py-2 rounded-lg mb-1"
+            >About Me</a
+          >
+          <a
+            href="#overview"
+            class="nav-link mobile block px-4 py-2 rounded-lg mb-1"
+            >📜 Overview</a
+          >
+          <a
+            href="#market"
+            class="nav-link mobile block px-4 py-2 rounded-lg mb-1"
+            >📈 Market Opportunity</a
+          >
+          <a
+            href="#products"
+            class="nav-link mobile block px-4 py-2 rounded-lg mb-1"
+            >🏺 Products & Process</a
+          >
+          <a
+            href="#financials"
+            class="nav-link mobile block px-4 py-2 rounded-lg mb-1"
+            >💰 Financial Plan</a
+          >
+          <a href="#risks" class="nav-link mobile block px-4 py-2 rounded-lg"
+            >⚠️ Risk Assessment</a
+          >
+        </nav>
 
-        <!-- Main Content -->
-        <main class="flex-1 p-6 md:p-10">
-            <!-- Mobile Header -->
-            <header class="lg:hidden flex justify-between items-center mb-6">
-                 <div class="flex items-center">
-                    <div class="w-8 h-8 bg-[#A88B5F] rounded-full flex items-center justify-center mr-2">
-                        <span class="text-white font-bold text-lg">HC</span>
-                    </div>
-                    <h1 class="text-lg font-bold">Hawassa Ceramics</h1>
+        <section id="AboutMe" class="content-section active">
+          <h2 class="text-3xl font-bold mb-2 text-[#A88B5F]">
+            አቶ ሐይማኖT 6 ቁጥር አማካኝ መሆኔን ያውቁ ይሆን?
+          </h2>
+          <img src="\image\a.jpg" alt="I was midfielder" />
+          <img src="\image\2.jpg" alt="ልጅህ እንዲህ ብታደርግስ?" />
+          <img src="\image\3.jpg" alt="ለኮምፑተር ሳይነቲስት ስሜቱ ምን ይሆን" />
+        </section>
+
+        <section id="overview" class="content-section">
+          <h2 class="text-3xl font-bold mb-2 text-[#A88B5F]">
+            Crafting Ethiopia's Future in Ceramics
+          </h2>
+          <p class="text-lg text-gray-600 mb-8">
+            An interactive overview of the business plan for Hawassa Ceramics
+            PLC, a venture poised to become a leader in Ethiopia's tableware
+            market by blending tradition with modern manufacturing.
+          </p>
+
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div
+              class="bg-white p-6 rounded-xl shadow-md border border-gray-200"
+            >
+              <h3 class="font-bold text-xl mb-2">Our Vision</h3>
+              <p class="text-gray-700">
+                To be the premier manufacturer of high-quality, desirable
+                ceramic tableware and culturally significant pottery in
+                Ethiopia, recognized for quality, design, and economic
+                contribution.
+              </p>
+            </div>
+            <div
+              class="bg-white p-6 rounded-xl shadow-md border border-gray-200"
+            >
+              <h3 class="font-bold text-xl mb-2">Our Mission</h3>
+              <p class="text-gray-700">
+                To manufacture and market a diverse range of durable,
+                aesthetically pleasing, and culturally relevant ceramic
+                products, fostering local economic development and contributing
+                to Ethiopia's import substitution goals.
+              </p>
+            </div>
+            <div
+              class="bg-white p-6 rounded-xl shadow-md border border-gray-200 md:col-span-2 lg:col-span-1"
+            >
+              <h3 class="font-bold text-xl mb-2">Strategic Location</h3>
+              <p class="text-gray-700">
+                Operating from the Hawassa Industrial Park provides unparalleled
+                advantages, including significant tax breaks, low land lease
+                costs, and robust infrastructure, de-risking the investment.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="market" class="content-section">
+          <h2 class="text-3xl font-bold mb-2 text-[#A88B5F]">
+            The Market Opportunity
+          </h2>
+          <p class="text-lg text-gray-600 mb-8">
+            Ethiopia's ceramic market shows a significant reliance on imports,
+            presenting a clear opportunity for local manufacturing. This section
+            explores the market size, trade deficit, and key customer segments.
+          </p>
+          <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+            <h3 class="font-semibold text-xl text-center mb-4">
+              The $73.3M Import Substitution Opportunity (2023)
+            </h3>
+            <p class="text-center text-gray-600 mb-6">
+              In 2023, Ethiopia imported $73.7M in ceramic goods while exporting
+              only $411k. This massive trade deficit highlights the vast
+              domestic demand that Hawassa Ceramics is positioned to fill.
+            </p>
+            <div class="chart-container">
+              <canvas id="marketDeficitChart"></canvas>
+            </div>
+          </div>
+
+          <div class="mt-8 grid md:grid-cols-2 gap-6">
+            <div
+              class="bg-white p-6 rounded-xl shadow-md border border-gray-200"
+            >
+              <h3 class="font-bold text-xl mb-3">Target Markets</h3>
+              <ul class="space-y-3 text-gray-700">
+                <li class="flex items-start">
+                  <span class="text-xl mr-3">🏠</span>
+                  <div>
+                    <span class="font-semibold">Residential Consumers:</span>
+                    Serving both general households with traditional needs
+                    (e.g., Jebena) and higher-income segments seeking modern
+                    designs.
+                  </div>
+                </li>
+                <li class="flex items-start">
+                  <span class="text-xl mr-3">🏨</span>
+                  <div>
+                    <span class="font-semibold">Commercial (HoReCa):</span>
+                    Supplying durable, customizable tableware to Ethiopia's
+                    growing hotel, restaurant, and cafe sector.
+                  </div>
+                </li>
+                <li class="flex items-start">
+                  <span class="text-xl mr-3">🌍</span>
+                  <div>
+                    <span class="font-semibold">Export Potential:</span> Tapping
+                    into the niche international market for authentic,
+                    culturally specific Ethiopian pottery.
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div
+              class="bg-white p-6 rounded-xl shadow-md border border-gray-200"
+            >
+              <h3 class="font-bold text-xl mb-3">Competitive Advantage</h3>
+              <ul class="space-y-3 text-gray-700">
+                <li class="flex items-start">
+                  <span class="text-xl mr-3">🏭</span>
+                  <div>
+                    <span class="font-semibold">Quality & Design Fusion:</span>
+                    Combining modern Chinese machinery with traditional
+                    Ethiopian aesthetics for a unique product offering.
+                  </div>
+                </li>
+                <li class="flex items-start">
+                  <span class="text-xl mr-3">📍</span>
+                  <div>
+                    <span class="font-semibold">Location Benefits:</span>
+                    Leveraging the Hawassa Industrial Park's incentives for a
+                    significant cost advantage.
+                  </div>
+                </li>
+                <li class="flex items-start">
+                  <span class="text-xl mr-3">🌿</span>
+                  <div>
+                    <span class="font-semibold">Local Sourcing:</span> Utilizing
+                    abundant local raw materials to reduce costs and mitigate
+                    foreign currency risks.
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section id="products" class="content-section">
+          <h2 class="text-3xl font-bold mb-2 text-[#A88B5F]">
+            Products & Production Process
+          </h2>
+          <p class="text-lg text-gray-600 mb-8">
+            We will produce a diverse range of tableware, from modern dining
+            sets to iconic traditional items like the Jebena. Our production
+            process integrates modern technology with meticulous quality
+            control. Click on a step to learn more.
+          </p>
+
+          <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+            <h3 class="font-semibold text-xl mb-6 text-center">
+              From Clay to Creation: Our Value Chain
+            </h3>
+            <div
+              id="process-flow"
+              class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 text-center"
+            >
+              <div
+                class="process-step active border-b-4 border-transparent p-4 rounded-lg bg-gray-50"
+                data-step="1"
+              >
+                <div class="text-4xl mb-2">🌿</div>
+                <h4 class="font-semibold">1. Raw Material</h4>
+              </div>
+              <div
+                class="process-step border-b-4 border-transparent p-4 rounded-lg bg-gray-50"
+                data-step="2"
+              >
+                <div class="text-4xl mb-2">🏺</div>
+                <h4 class="font-semibold">2. Forming</h4>
+              </div>
+              <div
+                class="process-step border-b-4 border-transparent p-4 rounded-lg bg-gray-50"
+                data-step="3"
+              >
+                <div class="text-4xl mb-2">☀️</div>
+                <h4 class="font-semibold">3. Drying & Firing</h4>
+              </div>
+              <div
+                class="process-step border-b-4 border-transparent p-4 rounded-lg bg-gray-50"
+                data-step="4"
+              >
+                <div class="text-4xl mb-2">🎨</div>
+                <h4 class="font-semibold">4. Glazing</h4>
+              </div>
+              <div
+                class="process-step border-b-4 border-transparent p-4 rounded-lg bg-gray-50"
+                data-step="5"
+              >
+                <div class="text-4xl mb-2">✨</div>
+                <h4 class="font-semibold">5. Finishing</h4>
+              </div>
+            </div>
+            <div id="process-details" class="mt-6 p-6 bg-[#F4EFE6] rounded-lg">
+              <div class="process-step-details active" data-step="1">
+                <h4 class="font-bold text-lg mb-2">Raw Material Preparation</h4>
+                <p>
+                  We begin by sourcing high-quality local raw materials like
+                  clay, kaolin, and feldspar. These materials undergo rigorous
+                  processing—grinding, washing, and mixing—to remove impurities
+                  and create the perfect clay body for our products.
+                </p>
+              </div>
+              <div class="process-step-details" data-step="2">
+                <h4 class="font-bold text-lg mb-2">Forming Techniques</h4>
+                <p>
+                  The prepared clay is shaped using a blend of techniques. Hand
+                  molding is used for unique artisanal pieces, while slip
+                  casting and pressure casting ensure consistency and precision
+                  for our high-volume modern tableware lines.
+                </p>
+              </div>
+              <div class="process-step-details" data-step="3">
+                <h4 class="font-bold text-lg mb-2">Drying and Firing</h4>
+                <p>
+                  Formed pieces are carefully dried to remove moisture before
+                  being fired in energy-efficient kilns. This high-temperature
+                  firing process vitrifies the clay, giving our products their
+                  signature strength and durability.
+                </p>
+              </div>
+              <div class="process-step-details" data-step="4">
+                <h4 class="font-bold text-lg mb-2">Glazing</h4>
+                <p>
+                  After the first firing, a glaze is applied to enhance
+                  aesthetics, durability, and functionality. A second firing
+                  ensures the glaze adheres perfectly, creating a flawless,
+                  lead-free, and food-safe finish.
+                </p>
+              </div>
+              <div class="process-step-details" data-step="5">
+                <h4 class="font-bold text-lg mb-2">
+                  Finishing & Quality Control
+                </h4>
+                <p>
+                  The final stage involves polishing, decorating, and applying
+                  any additional design elements. Stringent quality control is
+                  performed at every step to ensure each product meets our high
+                  standards before being packaged for distribution.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="financials" class="content-section">
+          <h2 class="text-3xl font-bold mb-2 text-[#A88B5F]">
+            Financial Plan & Projections
+          </h2>
+          <p class="text-lg text-gray-600 mb-8">
+            A sound financial strategy underpins our venture. This section
+            details our estimated startup costs, funding sources, and revenue
+            projections, demonstrating a clear path to profitability.
+          </p>
+
+          <div class="grid lg:grid-cols-5 gap-8">
+            <div
+              class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md border border-gray-200"
+            >
+              <h3 class="font-semibold text-xl text-center mb-4">
+                Startup Cost Breakdown
+              </h3>
+              <p class="text-center text-gray-600 mb-6">
+                The total estimated startup cost ranges from $975k to $1.58M.
+                The chart shows the allocation for a mid-range estimate of
+                $1.2M.
+              </p>
+              <div
+                class="chart-container"
+                style="height: 300px; max-height: 320px"
+              >
+                <canvas id="startupCostsChart"></canvas>
+              </div>
+            </div>
+            <div
+              class="lg:col-span-3 bg-white p-6 rounded-xl shadow-md border border-gray-200"
+            >
+              <h3 class="font-semibold text-xl text-center mb-4">
+                5-Year Revenue Projection
+              </h3>
+              <p class="text-center text-gray-600 mb-6">
+                Our projections show steady growth, driven by capturing domestic
+                market share and expanding into export markets. Hover over the
+                chart for details.
+              </p>
+              <div
+                class="chart-container"
+                style="height: 300px; max-height: 320px"
+              >
+                <canvas id="revenueProjectionChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div
+            class="mt-8 bg-white p-6 rounded-xl shadow-md border border-gray-200"
+          >
+            <h3 class="font-bold text-xl mb-4">Funding & Incentives</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <h4 class="font-semibold text-lg mb-2">Sources of Financing</h4>
+                <p class="text-gray-700">
+                  We will seek a mix of debt and equity. A key target is the
+                  Development Bank of Ethiopia (DBE), which offers highly
+                  favorable, non-collateralized loans for manufacturing
+                  projects, covering up to 75% of costs.
+                </p>
+              </div>
+              <div>
+                <h4 class="font-semibold text-lg mb-2">Government Support</h4>
+                <p class="text-gray-700">
+                  The venture benefits from a 100% customs duty exemption on
+                  imported machinery and income tax exemptions for up to 9
+                  years, significantly improving financial viability and
+                  accelerating our path to profitability.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="risks" class="content-section">
+          <h2 class="text-3xl font-bold mb-2 text-[#A88B5F]">
+            Risk Assessment & Mitigation
+          </h2>
+          <p class="text-lg text-gray-600 mb-8">
+            Proactively identifying and planning for potential challenges is key
+            to long-term success. Here we outline the primary risks and our
+            strategies to mitigate them.
+          </p>
+
+          <div class="space-y-6">
+            <div
+              class="bg-white p-6 rounded-xl shadow-md border border-gray-200"
+            >
+              <h3 class="font-bold text-xl mb-3">Market Risks</h3>
+              <div class="grid md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                  <h4 class="font-semibold">Risk: Competition from Imports</h4>
+                  <p class="text-gray-600">
+                    The market is currently dominated by imported goods.
+                  </p>
                 </div>
-                <button id="mobile-menu-button" class="p-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-4 6h4" />
-                    </svg>
-                </button>
-            </header>
-            <!-- Mobile Nav Dropdown -->
-             <nav id="mobile-nav" class="hidden lg:hidden mb-6 bg-white rounded-lg shadow-md p-4">
-                <a href="#overview" class="nav-link mobile active block px-4 py-2 rounded-lg mb-1">📜 Overview</a>
-                <a href="#market" class="nav-link mobile block px-4 py-2 rounded-lg mb-1">📈 Market Opportunity</a>
-                <a href="#products" class="nav-link mobile block px-4 py-2 rounded-lg mb-1">🏺 Products & Process</a>
-                <a href="#financials" class="nav-link mobile block px-4 py-2 rounded-lg mb-1">💰 Financial Plan</a>
-                <a href="#risks" class="nav-link mobile block px-4 py-2 rounded-lg">⚠️ Risk Assessment</a>
-            </nav>
-
-
-            <!-- Overview Section -->
-            <section id="overview" class="content-section active">
-                <h2 class="text-3xl font-bold mb-2 text-[#A88B5F]">Crafting Ethiopia's Future in Ceramics</h2>
-                <p class="text-lg text-gray-600 mb-8">An interactive overview of the business plan for Hawassa Ceramics PLC, a venture poised to become a leader in Ethiopia's tableware market by blending tradition with modern manufacturing.</p>
-                
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                        <h3 class="font-bold text-xl mb-2">Our Vision</h3>
-                        <p class="text-gray-700">To be the premier manufacturer of high-quality, desirable ceramic tableware and culturally significant pottery in Ethiopia, recognized for quality, design, and economic contribution.</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                        <h3 class="font-bold text-xl mb-2">Our Mission</h3>
-                        <p class="text-gray-700">To manufacture and market a diverse range of durable, aesthetically pleasing, and culturally relevant ceramic products, fostering local economic development and contributing to Ethiopia's import substitution goals.</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 md:col-span-2 lg:col-span-1">
-                        <h3 class="font-bold text-xl mb-2">Strategic Location</h3>
-                        <p class="text-gray-700">Operating from the Hawassa Industrial Park provides unparalleled advantages, including significant tax breaks, low land lease costs, and robust infrastructure, de-risking the investment.</p>
-                    </div>
+                <div>
+                  <h4 class="font-semibold text-[#A88B5F]">
+                    Mitigation Strategy
+                  </h4>
+                  <p class="text-gray-700">
+                    Offer a differentiated product line (traditional & modern),
+                    build a strong brand emphasizing local quality, and maintain
+                    competitive pricing.
+                  </p>
                 </div>
-            </section>
-
-            <!-- Market Opportunity Section -->
-            <section id="market" class="content-section">
-                <h2 class="text-3xl font-bold mb-2 text-[#A88B5F]">The Market Opportunity</h2>
-                 <p class="text-lg text-gray-600 mb-8">Ethiopia's ceramic market shows a significant reliance on imports, presenting a clear opportunity for local manufacturing. This section explores the market size, trade deficit, and key customer segments.</p>
-                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                    <h3 class="font-semibold text-xl text-center mb-4">The $73.3M Import Substitution Opportunity (2023)</h3>
-                    <p class="text-center text-gray-600 mb-6">In 2023, Ethiopia imported $73.7M in ceramic goods while exporting only $411k. This massive trade deficit highlights the vast domestic demand that Hawassa Ceramics is positioned to fill.</p>
-                    <div class="chart-container">
-                        <canvas id="marketDeficitChart"></canvas>
-                    </div>
+              </div>
+            </div>
+            <div
+              class="bg-white p-6 rounded-xl shadow-md border border-gray-200"
+            >
+              <h3 class="font-bold text-xl mb-3">Operational Risks</h3>
+              <div class="grid md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                  <h4 class="font-semibold">Risk: Power Interruptions</h4>
+                  <p class="text-gray-600">
+                    Frequent power outages in Ethiopia can halt production.
+                  </p>
                 </div>
-
-                <div class="mt-8 grid md:grid-cols-2 gap-6">
-                     <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                        <h3 class="font-bold text-xl mb-3">Target Markets</h3>
-                        <ul class="space-y-3 text-gray-700">
-                            <li class="flex items-start"><span class="text-xl mr-3">🏠</span> <div><span class="font-semibold">Residential Consumers:</span> Serving both general households with traditional needs (e.g., Jebena) and higher-income segments seeking modern designs.</div></li>
-                            <li class="flex items-start"><span class="text-xl mr-3">🏨</span> <div><span class="font-semibold">Commercial (HoReCa):</span> Supplying durable, customizable tableware to Ethiopia's growing hotel, restaurant, and cafe sector.</div></li>
-                            <li class="flex items-start"><span class="text-xl mr-3">🌍</span> <div><span class="font-semibold">Export Potential:</span> Tapping into the niche international market for authentic, culturally specific Ethiopian pottery.</div></li>
-                        </ul>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                        <h3 class="font-bold text-xl mb-3">Competitive Advantage</h3>
-                         <ul class="space-y-3 text-gray-700">
-                            <li class="flex items-start"><span class="text-xl mr-3">🏭</span> <div><span class="font-semibold">Quality & Design Fusion:</span> Combining modern Chinese machinery with traditional Ethiopian aesthetics for a unique product offering.</div></li>
-                            <li class="flex items-start"><span class="text-xl mr-3">📍</span> <div><span class="font-semibold">Location Benefits:</span> Leveraging the Hawassa Industrial Park's incentives for a significant cost advantage.</div></li>
-                            <li class="flex items-start"><span class="text-xl mr-3">🌿</span> <div><span class="font-semibold">Local Sourcing:</span> Utilizing abundant local raw materials to reduce costs and mitigate foreign currency risks.</div></li>
-                        </ul>
-                    </div>
+                <div>
+                  <h4 class="font-semibold text-[#A88B5F]">
+                    Mitigation Strategy
+                  </h4>
+                  <p class="text-gray-700">
+                    Invest in robust backup power systems (e.g., diesel
+                    generators) to ensure production continuity and prevent
+                    revenue loss.
+                  </p>
                 </div>
-            </section>
-
-            <!-- Products & Process Section -->
-            <section id="products" class="content-section">
-                <h2 class="text-3xl font-bold mb-2 text-[#A88B5F]">Products & Production Process</h2>
-                <p class="text-lg text-gray-600 mb-8">We will produce a diverse range of tableware, from modern dining sets to iconic traditional items like the Jebena. Our production process integrates modern technology with meticulous quality control. Click on a step to learn more.</p>
-                
-                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                    <h3 class="font-semibold text-xl mb-6 text-center">From Clay to Creation: Our Value Chain</h3>
-                    <div id="process-flow" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 text-center">
-                        <div class="process-step active border-b-4 border-transparent p-4 rounded-lg bg-gray-50" data-step="1">
-                            <div class="text-4xl mb-2">🌿</div>
-                            <h4 class="font-semibold">1. Raw Material</h4>
-                        </div>
-                        <div class="process-step border-b-4 border-transparent p-4 rounded-lg bg-gray-50" data-step="2">
-                            <div class="text-4xl mb-2">🏺</div>
-                            <h4 class="font-semibold">2. Forming</h4>
-                        </div>
-                        <div class="process-step border-b-4 border-transparent p-4 rounded-lg bg-gray-50" data-step="3">
-                            <div class="text-4xl mb-2">☀️</div>
-                            <h4 class="font-semibold">3. Drying & Firing</h4>
-                        </div>
-                        <div class="process-step border-b-4 border-transparent p-4 rounded-lg bg-gray-50" data-step="4">
-                            <div class="text-4xl mb-2">🎨</div>
-                            <h4 class="font-semibold">4. Glazing</h4>
-                        </div>
-                        <div class="process-step border-b-4 border-transparent p-4 rounded-lg bg-gray-50" data-step="5">
-                            <div class="text-4xl mb-2">✨</div>
-                            <h4 class="font-semibold">5. Finishing</h4>
-                        </div>
-                    </div>
-                    <div id="process-details" class="mt-6 p-6 bg-[#F4EFE6] rounded-lg">
-                        <div class="process-step-details active" data-step="1">
-                            <h4 class="font-bold text-lg mb-2">Raw Material Preparation</h4>
-                            <p>We begin by sourcing high-quality local raw materials like clay, kaolin, and feldspar. These materials undergo rigorous processing—grinding, washing, and mixing—to remove impurities and create the perfect clay body for our products.</p>
-                        </div>
-                        <div class="process-step-details" data-step="2">
-                            <h4 class="font-bold text-lg mb-2">Forming Techniques</h4>
-                            <p>The prepared clay is shaped using a blend of techniques. Hand molding is used for unique artisanal pieces, while slip casting and pressure casting ensure consistency and precision for our high-volume modern tableware lines.</p>
-                        </div>
-                        <div class="process-step-details" data-step="3">
-                            <h4 class="font-bold text-lg mb-2">Drying and Firing</h4>
-                            <p>Formed pieces are carefully dried to remove moisture before being fired in energy-efficient kilns. This high-temperature firing process vitrifies the clay, giving our products their signature strength and durability.</p>
-                        </div>
-                        <div class="process-step-details" data-step="4">
-                            <h4 class="font-bold text-lg mb-2">Glazing</h4>
-                            <p>After the first firing, a glaze is applied to enhance aesthetics, durability, and functionality. A second firing ensures the glaze adheres perfectly, creating a flawless, lead-free, and food-safe finish.</p>
-                        </div>
-                        <div class="process-step-details" data-step="5">
-                            <h4 class="font-bold text-lg mb-2">Finishing & Quality Control</h4>
-                            <p>The final stage involves polishing, decorating, and applying any additional design elements. Stringent quality control is performed at every step to ensure each product meets our high standards before being packaged for distribution.</p>
-                        </div>
-                    </div>
+                <div class="pt-4 border-t md:col-span-2"></div>
+                <div>
+                  <h4 class="font-semibold">Risk: Skilled Labor Shortages</h4>
+                  <p class="text-gray-600">
+                    High attrition rates are a known issue in industrial parks.
+                  </p>
                 </div>
-            </section>
-
-            <!-- Financial Plan Section -->
-            <section id="financials" class="content-section">
-                <h2 class="text-3xl font-bold mb-2 text-[#A88B5F]">Financial Plan & Projections</h2>
-                <p class="text-lg text-gray-600 mb-8">A sound financial strategy underpins our venture. This section details our estimated startup costs, funding sources, and revenue projections, demonstrating a clear path to profitability.</p>
-
-                <div class="grid lg:grid-cols-5 gap-8">
-                    <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                        <h3 class="font-semibold text-xl text-center mb-4">Startup Cost Breakdown</h3>
-                        <p class="text-center text-gray-600 mb-6">The total estimated startup cost ranges from $975k to $1.58M. The chart shows the allocation for a mid-range estimate of $1.2M.</p>
-                        <div class="chart-container" style="height: 300px; max-height: 320px;">
-                            <canvas id="startupCostsChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                         <h3 class="font-semibold text-xl text-center mb-4">5-Year Revenue Projection</h3>
-                         <p class="text-center text-gray-600 mb-6">Our projections show steady growth, driven by capturing domestic market share and expanding into export markets. Hover over the chart for details.</p>
-                        <div class="chart-container" style="height: 300px; max-height: 320px;">
-                            <canvas id="revenueProjectionChart"></canvas>
-                        </div>
-                    </div>
+                <div>
+                  <h4 class="font-semibold text-[#A88B5F]">
+                    Mitigation Strategy
+                  </h4>
+                  <p class="text-gray-700">
+                    Implement comprehensive training, offer competitive
+                    compensation packages moving towards a living wage, and
+                    foster a positive work environment.
+                  </p>
                 </div>
-                 <div class="mt-8 bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                    <h3 class="font-bold text-xl mb-4">Funding & Incentives</h3>
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <h4 class="font-semibold text-lg mb-2">Sources of Financing</h4>
-                            <p class="text-gray-700">We will seek a mix of debt and equity. A key target is the Development Bank of Ethiopia (DBE), which offers highly favorable, non-collateralized loans for manufacturing projects, covering up to 75% of costs.</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-lg mb-2">Government Support</h4>
-                            <p class="text-gray-700">The venture benefits from a 100% customs duty exemption on imported machinery and income tax exemptions for up to 9 years, significantly improving financial viability and accelerating our path to profitability.</p>
-                        </div>
-                    </div>
+              </div>
+            </div>
+            <div
+              class="bg-white p-6 rounded-xl shadow-md border border-gray-200"
+            >
+              <h3 class="font-bold text-xl mb-3">Financial Risks</h3>
+              <div class="grid md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                  <h4 class="font-semibold">Risk: Foreign Exchange Scarcity</h4>
+                  <p class="text-gray-600">
+                    Difficulty accessing foreign currency for imported parts or
+                    materials.
+                  </p>
                 </div>
-            </section>
-
-             <!-- Risk Assessment Section -->
-            <section id="risks" class="content-section">
-                <h2 class="text-3xl font-bold mb-2 text-[#A88B5F]">Risk Assessment & Mitigation</h2>
-                <p class="text-lg text-gray-600 mb-8">Proactively identifying and planning for potential challenges is key to long-term success. Here we outline the primary risks and our strategies to mitigate them.</p>
-
-                <div class="space-y-6">
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                        <h3 class="font-bold text-xl mb-3">Market Risks</h3>
-                        <div class="grid md:grid-cols-2 gap-x-6 gap-y-4">
-                            <div>
-                                <h4 class="font-semibold">Risk: Competition from Imports</h4>
-                                <p class="text-gray-600">The market is currently dominated by imported goods.</p>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-[#A88B5F]">Mitigation Strategy</h4>
-                                <p class="text-gray-700">Offer a differentiated product line (traditional & modern), build a strong brand emphasizing local quality, and maintain competitive pricing.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                        <h3 class="font-bold text-xl mb-3">Operational Risks</h3>
-                        <div class="grid md:grid-cols-2 gap-x-6 gap-y-4">
-                            <div>
-                                <h4 class="font-semibold">Risk: Power Interruptions</h4>
-                                <p class="text-gray-600">Frequent power outages in Ethiopia can halt production.</p>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-[#A88B5F]">Mitigation Strategy</h4>
-                                <p class="text-gray-700">Invest in robust backup power systems (e.g., diesel generators) to ensure production continuity and prevent revenue loss.</p>
-                            </div>
-                             <div class="pt-4 border-t md:col-span-2"></div>
-                             <div>
-                                <h4 class="font-semibold">Risk: Skilled Labor Shortages</h4>
-                                <p class="text-gray-600">High attrition rates are a known issue in industrial parks.</p>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-[#A88B5F]">Mitigation Strategy</h4>
-                                <p class="text-gray-700">Implement comprehensive training, offer competitive compensation packages moving towards a living wage, and foster a positive work environment.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                        <h3 class="font-bold text-xl mb-3">Financial Risks</h3>
-                        <div class="grid md:grid-cols-2 gap-x-6 gap-y-4">
-                            <div>
-                                <h4 class="font-semibold">Risk: Foreign Exchange Scarcity</h4>
-                                <p class="text-gray-600">Difficulty accessing foreign currency for imported parts or materials.</p>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-[#A88B5F]">Mitigation Strategy</h4>
-                                <p class="text-gray-700">Maximize local sourcing of raw materials and leverage government incentives that provide preferential access to foreign currency for manufacturers.</p>
-                            </div>
-                        </div>
-                    </div>
+                <div>
+                  <h4 class="font-semibold text-[#A88B5F]">
+                    Mitigation Strategy
+                  </h4>
+                  <p class="text-gray-700">
+                    Maximize local sourcing of raw materials and leverage
+                    government incentives that provide preferential access to
+                    foreign currency for manufacturers.
+                  </p>
                 </div>
-            </section>
+              </div>
+            </div>
+          </div>
+        </section>
 
-        </main>
+        <footer>
+          <div class="footer-content">
+            <div class="contact-info">
+              <h3>Contact</h3>
+              <p>Email: bahredeen@gmail.com or astugc2008@gmail.com</p>
+              <p>Phone: +251 (9) 33 85 28 75 or +251 (9) 42 21 11 42</p>
+              <p>Address: Daka kebele, Hawassa City, Ethiopia</p>
+            </div>
+            <div class="social-links">
+              <h3>Follow Me</h3>
+              <ul>
+                <li>
+                  <a
+                    href="https://linkedin.com/in/bahredin-ali-abusinwar"
+                    target="_blank"
+                    >LinkedIn</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </main>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const chartFontColor = '#4A4031';
-            const gridLineColor = '#E5E7EB';
+      document.addEventListener("DOMContentLoaded", function () {
+        const chartFontColor = "#4A4031";
+        const gridLineColor = "#E5E7EB";
 
-            // --- Data ---
-            const marketData = {
-                imports: 73.7,
-                exports: 0.411
-            };
+        // --- Data ---
+        const marketData = {
+          imports: 73.7,
+          exports: 0.411,
+        };
 
-            const startupCostsData = {
-                labels: ['Factory Construction', 'Machinery & Equipment', 'Initial Working Capital', 'Raw Materials & Other'],
-                data: [500000, 450000, 150000, 100000], // Based on a $1.2M estimate
-            };
+        const startupCostsData = {
+          labels: [
+            "Factory Construction",
+            "Machinery & Equipment",
+            "Initial Working Capital",
+            "Raw Materials & Other",
+          ],
+          data: [500000, 450000, 150000, 100000], // Based on a $1.2M estimate
+        };
 
-            const revenueProjectionData = {
-                labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
-                data: [800000, 1200000, 1800000, 2500000, 3500000]
-            };
-            
-            // --- Chart.js Configurations ---
-            const chartOptions = {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: chartFontColor,
-                            font: {
-                                family: "'Inter', sans-serif",
-                                size: 14
-                            }
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: '#4A4031',
-                        titleFont: { size: 14, weight: 'bold' },
-                        bodyFont: { size: 12 },
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed.y !== null) {
-                                    label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact' }).format(context.parsed.y);
-                                }
-                                return label;
-                            }
-                        }
-                    }
+        const revenueProjectionData = {
+          labels: ["Year 1", "Year 2", "Year 3", "Year 4", "Year 5"],
+          data: [800000, 1200000, 1800000, 2500000, 3500000],
+        };
+
+        // --- Chart.js Configurations ---
+        const chartOptions = {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: {
+                color: chartFontColor,
+                font: {
+                  family: "'Inter', sans-serif",
+                  size: 14,
                 },
-                scales: {
-                    y: {
-                        ticks: { 
-                            color: chartFontColor,
-                            callback: function(value) {
-                                return new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(value);
-                            }
-                        },
-                        grid: { color: gridLineColor }
+              },
+            },
+            tooltip: {
+              backgroundColor: "#4A4031",
+              titleFont: { size: 14, weight: "bold" },
+              bodyFont: { size: 12 },
+              callbacks: {
+                label: function (context) {
+                  let label = context.dataset.label || "";
+                  if (label) {
+                    label += ": ";
+                  }
+                  if (context.parsed.y !== null) {
+                    label += new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                      notation: "compact",
+                    }).format(context.parsed.y);
+                  }
+                  return label;
+                },
+              },
+            },
+          },
+          scales: {
+            y: {
+              ticks: {
+                color: chartFontColor,
+                callback: function (value) {
+                  return new Intl.NumberFormat("en-US", {
+                    notation: "compact",
+                    compactDisplay: "short",
+                  }).format(value);
+                },
+              },
+              grid: { color: gridLineColor },
+            },
+            x: {
+              ticks: { color: chartFontColor },
+              grid: { display: false },
+            },
+          },
+        };
+
+        // --- Chart Initialization ---
+        function createMarketDeficitChart() {
+          const ctx = document
+            .getElementById("marketDeficitChart")
+            ?.getContext("2d");
+          if (!ctx) return;
+          new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: ["Imports", "Exports"],
+              datasets: [
+                {
+                  label: "Value in Million USD",
+                  data: [marketData.imports, marketData.exports],
+                  backgroundColor: ["#E8989A", "#A88B5F"],
+                  borderColor: ["#E8989A", "#A88B5F"],
+                  borderWidth: 1,
+                },
+              ],
+            },
+            options: {
+              ...chartOptions,
+              plugins: { ...chartOptions.plugins, legend: { display: false } },
+            },
+          });
+        }
+
+        function createStartupCostsChart() {
+          const ctx = document
+            .getElementById("startupCostsChart")
+            ?.getContext("2d");
+          if (!ctx) return;
+          new Chart(ctx, {
+            type: "doughnut",
+            data: {
+              labels: startupCostsData.labels,
+              datasets: [
+                {
+                  label: "Cost",
+                  data: startupCostsData.data,
+                  backgroundColor: ["#A88B5F", "#D4C3A3", "#C8B087", "#EAE0C8"],
+                  hoverOffset: 4,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: "bottom",
+                  labels: {
+                    color: chartFontColor,
+                    font: { family: "'Inter', sans-serif" },
+                  },
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function (context) {
+                      let label = context.label || "";
+                      if (label) {
+                        label += ": ";
+                      }
+                      let value = context.raw;
+                      label += new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      }).format(value);
+                      return label;
                     },
-                    x: {
-                        ticks: { color: chartFontColor },
-                        grid: { display: false }
-                    }
-                }
-            };
+                  },
+                },
+              },
+            },
+          });
+        }
 
-            // --- Chart Initialization ---
-            function createMarketDeficitChart() {
-                const ctx = document.getElementById('marketDeficitChart')?.getContext('2d');
-                if (!ctx) return;
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Imports', 'Exports'],
-                        datasets: [{
-                            label: 'Value in Million USD',
-                            data: [marketData.imports, marketData.exports],
-                            backgroundColor: ['#E8989A', '#A88B5F'],
-                            borderColor: ['#E8989A', '#A88B5F'],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: { ...chartOptions, plugins: { ...chartOptions.plugins, legend: { display: false } } }
-                });
+        function createRevenueProjectionChart() {
+          const ctx = document
+            .getElementById("revenueProjectionChart")
+            ?.getContext("2d");
+          if (!ctx) return;
+          new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: revenueProjectionData.labels,
+              datasets: [
+                {
+                  label: "Projected Revenue",
+                  data: revenueProjectionData.data,
+                  fill: true,
+                  backgroundColor: "rgba(168, 139, 95, 0.2)",
+                  borderColor: "#A88B5F",
+                  tension: 0.3,
+                },
+              ],
+            },
+            options: chartOptions,
+          });
+        }
+
+        // --- Navigation Logic ---
+        const navLinks = document.querySelectorAll(".nav-link");
+        const contentSections = document.querySelectorAll(".content-section");
+
+        function switchTab(targetId) {
+          contentSections.forEach((section) => {
+            section.classList.toggle("active", section.id === targetId);
+          });
+
+          navLinks.forEach((link) => {
+            link.classList.toggle("active", link.hash === `#${targetId}`);
+          });
+
+          if (targetId === "market") createMarketDeficitChart();
+          if (targetId === "financials") {
+            createStartupCostsChart();
+            createRevenueProjectionChart();
+          }
+        }
+
+        document
+          .getElementById("desktop-nav")
+          .addEventListener("click", (e) => {
+            if (e.target.closest("a")) {
+              e.preventDefault();
+              const targetId = e.target.closest("a").hash.substring(1);
+              switchTab(targetId);
             }
+          });
 
-            function createStartupCostsChart() {
-                const ctx = document.getElementById('startupCostsChart')?.getContext('2d');
-                if (!ctx) return;
-                new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: startupCostsData.labels,
-                        datasets: [{
-                            label: 'Cost',
-                            data: startupCostsData.data,
-                            backgroundColor: ['#A88B5F', '#D4C3A3', '#C8B087', '#EAE0C8'],
-                            hoverOffset: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom', labels: { color: chartFontColor, font: { family: "'Inter', sans-serif" } } },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.label || '';
-                                        if (label) { label += ': '; }
-                                        let value = context.raw;
-                                        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
-                                        return label;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            function createRevenueProjectionChart() {
-                const ctx = document.getElementById('revenueProjectionChart')?.getContext('2d');
-                if (!ctx) return;
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: revenueProjectionData.labels,
-                        datasets: [{
-                            label: 'Projected Revenue',
-                            data: revenueProjectionData.data,
-                            fill: true,
-                            backgroundColor: 'rgba(168, 139, 95, 0.2)',
-                            borderColor: '#A88B5F',
-                            tension: 0.3
-                        }]
-                    },
-                    options: chartOptions
-                });
-            }
-            
-            // --- Navigation Logic ---
-            const navLinks = document.querySelectorAll('.nav-link');
-            const contentSections = document.querySelectorAll('.content-section');
-
-            function switchTab(targetId) {
-                contentSections.forEach(section => {
-                    section.classList.toggle('active', section.id === targetId);
-                });
-
-                navLinks.forEach(link => {
-                    link.classList.toggle('active', link.hash === `#${targetId}`);
-                });
-
-                if (targetId === 'market') createMarketDeficitChart();
-                if (targetId === 'financials') {
-                    createStartupCostsChart();
-                    createRevenueProjectionChart();
-                }
-            }
-
-            document.getElementById('desktop-nav').addEventListener('click', (e) => {
-                if (e.target.closest('a')) {
-                    e.preventDefault();
-                    const targetId = e.target.closest('a').hash.substring(1);
-                    switchTab(targetId);
-                }
-            });
-            
-            document.getElementById('mobile-nav').addEventListener('click', (e) => {
-                if (e.target.closest('a')) {
-                    e.preventDefault();
-                    const targetId = e.target.closest('a').hash.substring(1);
-                    switchTab(targetId);
-                    document.getElementById('mobile-nav').classList.add('hidden');
-                }
-            });
-
-            document.getElementById('mobile-menu-button').addEventListener('click', () => {
-                document.getElementById('mobile-nav').classList.toggle('hidden');
-            });
-
-
-            // --- Production Process Interaction ---
-            const processSteps = document.querySelectorAll('.process-step');
-            const processDetails = document.querySelectorAll('.process-step-details');
-
-            document.getElementById('process-flow').addEventListener('click', (e) => {
-                const stepElement = e.target.closest('.process-step');
-                if (!stepElement) return;
-
-                const step = stepElement.dataset.step;
-
-                processSteps.forEach(s => s.classList.remove('active'));
-                stepElement.classList.add('active');
-
-                processDetails.forEach(d => {
-                    d.classList.toggle('active', d.dataset.step === step);
-                });
-            });
-
-            // Initial chart load for the default view if needed
-            // None needed for overview
+        document.getElementById("mobile-nav").addEventListener("click", (e) => {
+          if (e.target.closest("a")) {
+            e.preventDefault();
+            const targetId = e.target.closest("a").hash.substring(1);
+            switchTab(targetId);
+            document.getElementById("mobile-nav").classList.add("hidden");
+          }
         });
+
+        document
+          .getElementById("mobile-menu-button")
+          .addEventListener("click", () => {
+            document.getElementById("mobile-nav").classList.toggle("hidden");
+          });
+
+        // --- Production Process Interaction ---
+        const processSteps = document.querySelectorAll(".process-step");
+        const processDetails = document.querySelectorAll(
+          ".process-step-details"
+        );
+
+        document
+          .getElementById("process-flow")
+          .addEventListener("click", (e) => {
+            const stepElement = e.target.closest(".process-step");
+            if (!stepElement) return;
+
+            const step = stepElement.dataset.step;
+
+            processSteps.forEach((s) => s.classList.remove("active"));
+            stepElement.classList.add("active");
+
+            processDetails.forEach((d) => {
+              d.classList.toggle("active", d.dataset.step === step);
+            });
+          });
+
+        // Initial chart load for the default view if needed
+        // None needed for overview
+      });
     </script>
-</body>
+  </body>
 </html>
